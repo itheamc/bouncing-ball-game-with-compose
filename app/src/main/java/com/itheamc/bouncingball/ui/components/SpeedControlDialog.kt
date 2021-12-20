@@ -1,6 +1,7 @@
 package com.itheamc.bouncingball.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,6 +14,7 @@ import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +31,12 @@ fun SpeedControlDialog(
     onDismissRequest: () -> Unit,
     updateSpeed: (Float) -> Unit
 ) {
+
+    val color by animateColorAsState(
+        targetValue = if (speed <= 2.5) Color.Green else if (speed in 2.5..3.75) Color.Yellow else Color.Red,
+        animationSpec = tween(250)
+    )
+
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(animationSpec = tween(250)),
@@ -50,17 +58,13 @@ fun SpeedControlDialog(
                 Text(
                     text = "Speed",
                     style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.5f
-                        ),
+                        color = color
                     )
                 )
                 Text(
                     text = "${speed.roundToInt()}",
                     style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.3f
-                        )
+                        color = color
                     )
                 )
                 Slider(
@@ -70,8 +74,8 @@ fun SpeedControlDialog(
                     value = speed,
                     onValueChange = updateSpeed,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.Yellow,
-                        activeTrackColor = Color.Yellow
+                        thumbColor = color,
+                        activeTrackColor = color
                     )
                 )
             }

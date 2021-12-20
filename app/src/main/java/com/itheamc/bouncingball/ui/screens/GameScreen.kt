@@ -1,16 +1,14 @@
 package com.itheamc.bouncingball.ui.screens
 
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -44,58 +42,58 @@ fun GameScreen(
         config.screenHeightDp.dp.roundToPx()
     }
 
-    var speedControlDialogVisibility by remember {
+    var speedControlDialogVisibility by rememberSaveable {
         mutableStateOf(false)
     }
 
-    var gameOverDialogVisibility by remember {
+    var gameOverDialogVisibility by rememberSaveable {
         mutableStateOf(false)
     }
 
     val ballRadius = 40f
     val lineLength = 150f
-    var speed by remember {
+    var speed by rememberSaveable {
         mutableStateOf(2f)
     }
 
-    var lineOffsetX by remember {
+    var lineOffsetX by rememberSaveable {
         mutableStateOf(100f)
     }
 
-    var lineOffsetX1 by remember {
+    var lineOffsetX1 by rememberSaveable {
         mutableStateOf(lineOffsetX + 150f)
     }
 
-    var lineOffsetY by remember {
+    var lineOffsetY by rememberSaveable {
         mutableStateOf(0f)
     }
 
-    var xOffsetOfBall by remember {
+    var xOffsetOfBall by rememberSaveable {
         mutableStateOf(50f)
     }
 
-    var yOffsetOfBall by remember {
+    var yOffsetOfBall by rememberSaveable {
         mutableStateOf(50f)
     }
 
-    var stop by remember {
+    var stop by rememberSaveable {
         mutableStateOf(false)
     }
 
-    var collapsedStatus by remember {
+    var collapsedStatus by rememberSaveable {
         mutableStateOf(Ball.NotCollapsed)
     }
 
-    var score by remember {
+    var score by rememberSaveable {
         mutableStateOf(0)
     }
 
 
-    var xDirectionOfBall by remember {
+    var xDirectionOfBall by rememberSaveable {
         mutableStateOf(0)
     }
 
-    var yDirectionBall by remember {
+    var yDirectionBall by rememberSaveable {
         mutableStateOf(0)
     }
 
@@ -124,7 +122,6 @@ fun GameScreen(
                 yDirectionBall = ((negativeDirection + positiveDirection).random() * speed).toInt()
             }
             Ball.BottomCollapsed -> {
-                score = 0
                 xDirectionOfBall =
                     ((negativeDirection + positiveDirection).random() * speed).toInt()
                 yDirectionBall = (positiveDirection.random() * speed).toInt()
@@ -141,7 +138,7 @@ fun GameScreen(
 
     LaunchedEffect(keys = arrayOf(xOffsetOfBall, stop)) {
         if (!stop) {
-            if ((yOffsetOfBall + ballRadius) in (lineOffsetY - (8 * speed))..(lineOffsetY + (8 * speed)) && xOffsetOfBall in (lineOffsetX - ballRadius / 2)..(lineOffsetX1 + ballRadius / 2)) {
+            if ((yOffsetOfBall + ballRadius) in (lineOffsetY - (10 * speed))..(lineOffsetY + (10 * speed)) && xOffsetOfBall in (lineOffsetX - ballRadius)..(lineOffsetX1 + ballRadius)) {
                 collapsedStatus = Ball.LineCollapsed
             } else if (yOffsetOfBall - ballRadius <= 0) {
                 collapsedStatus = Ball.TopCollapsed
@@ -171,17 +168,21 @@ fun GameScreen(
 
                     },
                     onPress = { offset ->
-                        lineOffsetX = offset.x - (lineLength / 2)
-                        lineOffsetX1 = lineOffsetX + lineLength
+                       if (!stop) {
+                           lineOffsetX = offset.x - (lineLength / 2)
+                           lineOffsetX1 = lineOffsetX + lineLength
+                       }
                     },
                     onLongPress = {
-                        lineOffsetX = it.x - (lineLength / 2)
-                        lineOffsetX1 = lineOffsetX + lineLength
+                        if (!stop) {
+                            lineOffsetX = it.x - (lineLength / 2)
+                            lineOffsetX1 = lineOffsetX + lineLength
+                        }
                     }
                 )
             }
             .drawBehind {
-                lineOffsetY = size.height - 200f
+                lineOffsetY = size.height - 100f
                 drawLine(
                     brush = Brush.linearGradient(
                         colors = listOf(
@@ -228,21 +229,43 @@ fun GameScreen(
             )
         )
 
-        IconButton(
+
+        Row(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(4.dp),
-            onClick = {
-                speedControlDialogVisibility = !speedControlDialogVisibility
-            }
+                .padding(4.dp)
+                .align(Alignment.TopEnd),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Icon(
-                imageVector = Icons.Filled.Speed,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = 0.5f
+
+            IconButton(
+                onClick = {
+                    stop = !stop
+                }
+            ) {
+                Icon(
+                    imageVector = if (stop) Icons.Filled.PlayArrow else Icons.Filled.Pause,
+                    contentDescription = "playpause",
+                    tint = MaterialTheme.colorScheme.onSurface.copy(
+                        alpha = 0.5f
+                    )
                 )
-            )
+            }
+
+            IconButton(
+                onClick = {
+                    speedControlDialogVisibility = !speedControlDialogVisibility
+                    stop = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Speed,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(
+                        alpha = 0.5f
+                    )
+                )
+            }
         }
 
         GameOverDialog(
@@ -250,6 +273,7 @@ fun GameScreen(
             onRestart = {
                 // Restart the game
                 gameOverDialogVisibility = false
+                score = 0
                 stop = false
             },
             onDismissRequest = {
@@ -261,7 +285,8 @@ fun GameScreen(
                         inclusive = true
                     }
                 }
-            }
+            },
+            score = score
         )
 
         SpeedControlDialog(
@@ -269,6 +294,7 @@ fun GameScreen(
             speed = speed,
             onDismissRequest = {
                 speedControlDialogVisibility = false
+                stop = false
             },
             updateSpeed = {
                 speed = it
