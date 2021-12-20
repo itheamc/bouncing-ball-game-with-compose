@@ -1,6 +1,9 @@
 package com.itheamc.bouncingball.ui.screens
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
@@ -168,10 +171,10 @@ fun GameScreen(
 
                     },
                     onPress = { offset ->
-                       if (!stop) {
-                           lineOffsetX = offset.x - (lineLength / 2)
-                           lineOffsetX1 = lineOffsetX + lineLength
-                       }
+                        if (!stop) {
+                            lineOffsetX = offset.x - (lineLength / 2)
+                            lineOffsetX1 = lineOffsetX + lineLength
+                        }
                     },
                     onLongPress = {
                         if (!stop) {
@@ -181,8 +184,20 @@ fun GameScreen(
                     }
                 )
             }
+            .draggable(
+                enabled = true,
+                state = rememberDraggableState(
+                    onDelta = {
+                        if (!stop) {
+                            lineOffsetX += it
+                            lineOffsetX1 += it
+                        }
+                    }
+                ),
+                orientation = Orientation.Horizontal
+            )
             .drawBehind {
-                lineOffsetY = size.height - 100f
+                lineOffsetY = size.height - 150f
                 drawLine(
                     brush = Brush.linearGradient(
                         colors = listOf(
