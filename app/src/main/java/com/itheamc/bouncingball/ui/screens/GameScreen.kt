@@ -6,9 +6,7 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,13 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.itheamc.bouncingball.Ball
-import com.itheamc.bouncingball.navigation.Routes
+import com.itheamc.bouncingball.roomdb.Score
+import com.itheamc.bouncingball.ui.navigation.Routes
 import com.itheamc.bouncingball.ui.components.GameOverDialog
 import com.itheamc.bouncingball.ui.components.SpeedControlDialog
+import com.itheamc.bouncingball.viewmodel.GameViewModel
 import kotlin.random.Random
 
 @Composable
 fun GameScreen(
+    viewmodel: GameViewModel,
     navController: NavHostController
 ) {
     val config = LocalConfiguration.current
@@ -128,6 +129,7 @@ fun GameScreen(
                 xDirectionOfBall =
                     ((negativeDirection + positiveDirection).random() * speed).toInt()
                 yDirectionBall = (positiveDirection.random() * speed).toInt()
+                viewmodel.insert(Score(_score = score))
                 gameOverDialogVisibility = true
                 stop = true
             }
@@ -252,6 +254,20 @@ fun GameScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
+
+            IconButton(
+                onClick = {
+                    navController.navigate(Routes.ScoresScreen.name)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Grain,
+                    contentDescription = "scores",
+                    tint = MaterialTheme.colorScheme.onSurface.copy(
+                        alpha = 0.5f
+                    )
+                )
+            }
 
             IconButton(
                 onClick = {

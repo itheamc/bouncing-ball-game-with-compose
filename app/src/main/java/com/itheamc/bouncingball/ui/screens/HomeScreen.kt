@@ -1,9 +1,7 @@
 package com.itheamc.bouncingball.ui.screens
 
-import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -20,7 +18,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.itheamc.bouncingball.navigation.Routes
+import com.itheamc.bouncingball.ui.navigation.Routes
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.itheamc.bouncingball.BuildConfig

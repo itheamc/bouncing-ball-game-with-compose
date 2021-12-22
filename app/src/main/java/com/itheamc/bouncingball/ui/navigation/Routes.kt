@@ -1,8 +1,9 @@
-package com.itheamc.bouncingball.navigation
+package com.itheamc.bouncingball.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Score
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class Routes(
@@ -16,5 +17,9 @@ enum class Routes(
     GameScreen(
         label = "Game",
         icon = Icons.Filled.Games
+    ),
+    ScoresScreen(
+        label = "Scores",
+        icon = Icons.Filled.Score
     )
 }
