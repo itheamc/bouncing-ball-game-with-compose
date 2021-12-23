@@ -22,9 +22,17 @@ import kotlin.random.Random
 
 @Composable
 fun ScoreView(score: Score) {
+
+    val rand = Random.nextInt(0, 3)
+
     Box(
         modifier = Modifier.fillMaxWidth(0.9f),
-        contentAlignment = if (score._score % 5 == 0) Alignment.Center else if (score._score % 3 == 0) Alignment.CenterEnd else Alignment.CenterStart
+        contentAlignment = when (rand) {
+            0 -> Alignment.CenterStart
+            1 -> Alignment.CenterEnd
+            2 -> Alignment.Center
+            else -> Alignment.CenterEnd
+        }
     ) {
         Column(
             modifier = Modifier
@@ -72,7 +80,7 @@ fun ScoreView(score: Score) {
                 text = score._score.toString(),
                 style = MaterialTheme.typography.displayMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = (24 + (score._score/1.5)).sp
+                    fontSize = (24 + (score._score / 1.5)).sp
                 )
             )
             Divider()

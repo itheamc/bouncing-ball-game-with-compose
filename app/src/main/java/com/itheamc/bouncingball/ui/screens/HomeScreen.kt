@@ -1,5 +1,7 @@
 package com.itheamc.bouncingball.ui.screens
 
+import android.content.pm.ActivityInfo
+import android.graphics.drawable.GradientDrawable
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
@@ -22,6 +24,7 @@ import com.itheamc.bouncingball.ui.navigation.Routes
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.itheamc.bouncingball.BuildConfig
+import com.itheamc.bouncingball.utils.ScreenOrientation
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -48,6 +51,9 @@ fun HomeScreen(
         val r = Random.nextInt(1, 200) + Random.nextInt(2, 50)
         rand = if (r == rand) r + 1 else r
     })
+
+    // For Screen Orientation
+    ScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     Column(
         modifier = Modifier.fillMaxSize(),
