@@ -6,8 +6,14 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Grain
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -27,9 +33,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.itheamc.bouncingball.Ball
 import com.itheamc.bouncingball.roomdb.Score
-import com.itheamc.bouncingball.ui.navigation.Routes
 import com.itheamc.bouncingball.ui.components.GameOverDialog
-import com.itheamc.bouncingball.ui.components.SpeedControlDialog
+import com.itheamc.bouncingball.ui.components.SettingDialog
+import com.itheamc.bouncingball.ui.navigation.Routes
 import com.itheamc.bouncingball.viewmodel.GameViewModel
 import kotlin.random.Random
 
@@ -46,7 +52,7 @@ fun GameScreen(
         config.screenHeightDp.dp.roundToPx()
     }
 
-    var speedControlDialogVisibility by rememberSaveable {
+    var settingDialogVisibility by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -54,8 +60,17 @@ fun GameScreen(
         mutableStateOf(false)
     }
 
-    val ballRadius = 40f
-    val lineLength = 150f
+    var lineHeight by rememberSaveable {
+        mutableStateOf(150f)
+    }
+
+    var ballRadius by rememberSaveable {
+        mutableStateOf(40f)
+    }
+
+    var lineLength by rememberSaveable {
+        mutableStateOf(150f)
+    }
     var speed by rememberSaveable {
         mutableStateOf(2f)
     }
@@ -65,7 +80,7 @@ fun GameScreen(
     }
 
     var lineOffsetX1 by rememberSaveable {
-        mutableStateOf(lineOffsetX + 150f)
+        mutableStateOf(lineOffsetX + lineLength)
     }
 
     var lineOffsetY by rememberSaveable {
@@ -161,6 +176,16 @@ fun GameScreen(
         }
     }
 
+    // Update LineOffsetY whenever lineHeight is change
+    LaunchedEffect(key1 = lineHeight, block = {
+        lineOffsetY = height - lineHeight
+    })
+
+    // Adjust lineOffset1 as per ball radius
+    LaunchedEffect(key1 = ballRadius, block = {
+        lineOffsetX1 = lineOffsetX + lineLength
+    })
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -199,7 +224,7 @@ fun GameScreen(
                 orientation = Orientation.Horizontal
             )
             .drawBehind {
-                lineOffsetY = size.height - 150f
+//                lineOffsetY = size.height - 150f
                 drawLine(
                     brush = Brush.linearGradient(
                         colors = listOf(
@@ -285,12 +310,12 @@ fun GameScreen(
 
             IconButton(
                 onClick = {
-                    speedControlDialogVisibility = !speedControlDialogVisibility
+                    settingDialogVisibility = !settingDialogVisibility
                     stop = true
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Speed,
+                    imageVector = Icons.Filled.Settings,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface.copy(
                         alpha = 0.5f
@@ -300,6 +325,7 @@ fun GameScreen(
         }
 
         GameOverDialog(
+            viewmodel = viewmodel,
             visible = gameOverDialogVisibility,
             onRestart = {
                 // Restart the game
@@ -320,15 +346,24 @@ fun GameScreen(
             score = score
         )
 
-        SpeedControlDialog(
-            visible = speedControlDialogVisibility,
+        SettingDialog(
+            visible = settingDialogVisibility,
             speed = speed,
+            ballRadius = ballRadius,
+            lineHeight = lineHeight,
             onDismissRequest = {
-                speedControlDialogVisibility = false
+                settingDialogVisibility = false
                 stop = false
             },
             updateSpeed = {
                 speed = it
+            },
+            updateRadius = {
+                ballRadius = it
+                lineLength = 150f + ((it - 40f) / 2)
+            },
+            updateLineHeight = {
+                lineHeight = it
             }
         )
     }

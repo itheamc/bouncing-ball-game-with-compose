@@ -11,6 +11,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,11 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
+import com.itheamc.bouncingball.roomdb.Score
+import com.itheamc.bouncingball.viewmodel.GameViewModel
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 @Composable
 fun GameOverDialog(
+    viewmodel: GameViewModel,
     visible: Boolean = false,
     onRestart: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -34,6 +38,8 @@ fun GameOverDialog(
     var rand by rememberSaveable {
         mutableStateOf(0)
     }
+    val scores: List<Score> by viewmodel.allScores.observeAsState(listOf())
+
 
     val color by animateColorAsState(
         targetValue = when {
@@ -108,6 +114,16 @@ fun GameOverDialog(
                     text = "Score:  $score",
                     style = MaterialTheme.typography.labelMedium.copy(
                         color = Color.White.copy(
+                            alpha = 0.9f
+                        ),
+                    )
+                )
+
+                Spacer(modifier = Modifier.requiredSize(6.dp))
+                Text(
+                    text = "High Score:  ${scores.maxOf { it._score }}",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = color.copy(
                             alpha = 0.9f
                         ),
                     )
