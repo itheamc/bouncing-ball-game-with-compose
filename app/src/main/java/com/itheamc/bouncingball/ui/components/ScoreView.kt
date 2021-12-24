@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.itheamc.bouncingball.roomdb.Score
@@ -21,7 +22,7 @@ import com.itheamc.bouncingball.utils.toTime
 import kotlin.random.Random
 
 @Composable
-fun ScoreView(score: Score) {
+fun ScoreView(score: Score, size: DpSize) {
 
     val rand = Random.nextInt(0, 3)
 
@@ -36,7 +37,7 @@ fun ScoreView(score: Score) {
     ) {
         Column(
             modifier = Modifier
-                .size((100 + score._score).dp)
+                .size(if((100 + score._score) < (size.width.value * 0.9)) (100 + score._score).dp else size.width * 0.9f)
                 .clip(
                     shape = CircleShape
                 )
@@ -80,7 +81,7 @@ fun ScoreView(score: Score) {
                 text = score._score.toString(),
                 style = MaterialTheme.typography.displayMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = (24 + (score._score / 1.5)).sp
+                    fontSize = if((24 + (score._score / 1.5)) < 120) (24 + (score._score / 1.5)).sp else 120.sp
                 )
             )
             Divider()
